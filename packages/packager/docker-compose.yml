@@ -1,0 +1,6 @@
+services:
+  packager:
+    container_name: packager
+    build:
+      context: ./../../
+      dockerfile: packages/packager/Dockerfile
