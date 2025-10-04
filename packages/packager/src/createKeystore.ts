@@ -1,96 +1,41 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { spawn } from "child_process";
-
-function runOpenSSL(
-  args: string[],
-  input?: Buffer | string,
-  encoding: BufferEncoding | "buffer" = "utf8",
-): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const child = spawn("openssl", args);
-
-    const stdout: Buffer[] = [];
-    const stderr: Buffer[] = [];
-
-    if (input) {
-      child.stdin.write(input);
-    }
-    child.stdin.end();
-
-    child.stdout.on("data", (chunk) => stdout.push(chunk));
-    child.stderr.on("data", (chunk) => stderr.push(chunk));
-
-    child.on("error", reject);
-
-    child.on("close", (code) => {
-      if (code !== 0) {
-        reject(new Error(Buffer.concat(stderr).toString("utf8")));
-      } else {
-        const out = Buffer.concat(stdout);
-        resolve(
-          encoding === "buffer" ? out : Buffer.from(out.toString(encoding)),
-        );
-      }
-    });
-  });
-}
+import forge from "node-forge";
 
 interface KeystoreOptions {
-  keyalias: string;
   keypass: string;
-  cn?: string;
 }
 
-export async function createP12KeystoreBuffer({
-  keyalias,
+export function generateP12KeystoreBuffer({
   keypass,
-  cn = "CN=MyApp,O=MyCompany,C=US",
-}: KeystoreOptions): Promise<Buffer> {
-  // 1. Generate private key
-  const privateKey = await runOpenSSL(
-    ["genrsa", "-aes256", "-passout", `pass:${keypass}`, "2048"],
-    undefined,
-    "utf8",
-  );
+}: KeystoreOptions): Buffer<ArrayBuffer> {
+  const keys = forge.pki.rsa.generateKeyPair(2048);
 
-  // 2. Generate self-signed certificate
-  const cert = await runOpenSSL(
-    [
-      "req",
-      "-new",
-      "-x509",
-      "-subj",
-      `/${cn}`,
-      "-days",
-      "3650",
-      "-key",
-      "/dev/stdin",
-      "-passin",
-      `pass:${keypass}`,
-    ],
-    privateKey,
-    "utf8",
-  );
+  const cert = forge.pki.createCertificate();
+  cert.publicKey = keys.publicKey;
+  cert.serialNumber = "01";
+  cert.validity.notBefore = new Date();
+  cert.validity.notAfter = new Date();
+  cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
 
-  // 3. Create PKCS#12 keystore (binary output)
-  const p12 = await runOpenSSL(
-    [
-      "pkcs12",
-      "-export",
-      "-name",
-      keyalias,
-      "-passin",
-      `pass:${keypass}`,
-      "-passout",
-      `pass:${keypass}`,
-      "-inkey",
-      "/dev/stdin",
-      "-in",
-      "/dev/stdin",
-    ],
-    Buffer.concat([privateKey, cert]),
-    "buffer",
-  );
+  // const attrs = [{ name: "commonName", value: "example.org" }];
+  // cert.setSubject(attrs);
+  // cert.setIssuer(attrs);
+  cert.sign(keys.privateKey, forge.md.sha256.create());
 
-  return p12; // this is the keystore content
+  const p12Asn1 = forge.pkcs12.toPkcs12Asn1(keys.privateKey, cert, keypass, {
+    algorithm: "3des",
+  });
+
+  const p12Der = forge.asn1.toDer(p12Asn1).getBytes();
+  const p12Buffer = Buffer.from(p12Der, "binary");
+
+  return p12Buffer;
 }
+
+export const parseP12KeystoreBuffer = (keystore: Buffer, keypass: string) => {
+  // Convert back to forge ASN.1
+  const p12Der2 = forge.util.createBuffer(keystore);
+  const p12Asn1FromDb = forge.asn1.fromDer(p12Der2);
+  const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1FromDb, keypass);
+
+  return p12;
+};

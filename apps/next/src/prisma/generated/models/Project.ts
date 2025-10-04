@@ -26,9 +26,8 @@ export type AggregateProject = {
 export type ProjectMinAggregateOutputType = {
   id: string | null
   name: string | null
-  keystore: string | null
+  keystore: Uint8Array | null
   keypass: string | null
-  keyalias: string | null
   creatorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -37,9 +36,8 @@ export type ProjectMinAggregateOutputType = {
 export type ProjectMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  keystore: string | null
+  keystore: Uint8Array | null
   keypass: string | null
-  keyalias: string | null
   creatorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -50,7 +48,6 @@ export type ProjectCountAggregateOutputType = {
   name: number
   keystore: number
   keypass: number
-  keyalias: number
   creatorId: number
   createdAt: number
   updatedAt: number
@@ -63,7 +60,6 @@ export type ProjectMinAggregateInputType = {
   name?: true
   keystore?: true
   keypass?: true
-  keyalias?: true
   creatorId?: true
   createdAt?: true
   updatedAt?: true
@@ -74,7 +70,6 @@ export type ProjectMaxAggregateInputType = {
   name?: true
   keystore?: true
   keypass?: true
-  keyalias?: true
   creatorId?: true
   createdAt?: true
   updatedAt?: true
@@ -85,7 +80,6 @@ export type ProjectCountAggregateInputType = {
   name?: true
   keystore?: true
   keypass?: true
-  keyalias?: true
   creatorId?: true
   createdAt?: true
   updatedAt?: true
@@ -167,9 +161,8 @@ export type ProjectGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type ProjectGroupByOutputType = {
   id: string
   name: string
-  keystore: string
+  keystore: Uint8Array
   keypass: string
-  keyalias: string
   creatorId: string
   createdAt: Date
   updatedAt: Date
@@ -199,9 +192,8 @@ export type ProjectWhereInput = {
   NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
   id?: Prisma.StringFilter<"Project"> | string
   name?: Prisma.StringFilter<"Project"> | string
-  keystore?: Prisma.StringFilter<"Project"> | string
+  keystore?: Prisma.BytesFilter<"Project"> | Uint8Array
   keypass?: Prisma.StringFilter<"Project"> | string
-  keyalias?: Prisma.StringFilter<"Project"> | string
   creatorId?: Prisma.StringFilter<"Project"> | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
@@ -213,7 +205,6 @@ export type ProjectOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   keystore?: Prisma.SortOrder
   keypass?: Prisma.SortOrder
-  keyalias?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -226,9 +217,8 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProjectWhereInput[]
   NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
   name?: Prisma.StringFilter<"Project"> | string
-  keystore?: Prisma.StringFilter<"Project"> | string
+  keystore?: Prisma.BytesFilter<"Project"> | Uint8Array
   keypass?: Prisma.StringFilter<"Project"> | string
-  keyalias?: Prisma.StringFilter<"Project"> | string
   creatorId?: Prisma.StringFilter<"Project"> | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
@@ -240,7 +230,6 @@ export type ProjectOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   keystore?: Prisma.SortOrder
   keypass?: Prisma.SortOrder
-  keyalias?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -255,9 +244,8 @@ export type ProjectScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProjectScalarWhereWithAggregatesInput | Prisma.ProjectScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Project"> | string
   name?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  keystore?: Prisma.StringWithAggregatesFilter<"Project"> | string
+  keystore?: Prisma.BytesWithAggregatesFilter<"Project"> | Uint8Array
   keypass?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  keyalias?: Prisma.StringWithAggregatesFilter<"Project"> | string
   creatorId?: Prisma.StringWithAggregatesFilter<"Project"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
@@ -266,9 +254,8 @@ export type ProjectScalarWhereWithAggregatesInput = {
 export type ProjectCreateInput = {
   id?: string
   name: string
-  keystore: string
+  keystore: Uint8Array
   keypass: string
-  keyalias: string
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutProjectsInput
@@ -277,9 +264,8 @@ export type ProjectCreateInput = {
 export type ProjectUncheckedCreateInput = {
   id?: string
   name: string
-  keystore: string
+  keystore: Uint8Array
   keypass: string
-  keyalias: string
   creatorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -288,9 +274,8 @@ export type ProjectUncheckedCreateInput = {
 export type ProjectUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  keystore?: Prisma.StringFieldUpdateOperationsInput | string
+  keystore?: Prisma.BytesFieldUpdateOperationsInput | Uint8Array
   keypass?: Prisma.StringFieldUpdateOperationsInput | string
-  keyalias?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
@@ -299,9 +284,8 @@ export type ProjectUpdateInput = {
 export type ProjectUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  keystore?: Prisma.StringFieldUpdateOperationsInput | string
+  keystore?: Prisma.BytesFieldUpdateOperationsInput | Uint8Array
   keypass?: Prisma.StringFieldUpdateOperationsInput | string
-  keyalias?: Prisma.StringFieldUpdateOperationsInput | string
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -310,9 +294,8 @@ export type ProjectUncheckedUpdateInput = {
 export type ProjectCreateManyInput = {
   id?: string
   name: string
-  keystore: string
+  keystore: Uint8Array
   keypass: string
-  keyalias: string
   creatorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -321,9 +304,8 @@ export type ProjectCreateManyInput = {
 export type ProjectUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  keystore?: Prisma.StringFieldUpdateOperationsInput | string
+  keystore?: Prisma.BytesFieldUpdateOperationsInput | Uint8Array
   keypass?: Prisma.StringFieldUpdateOperationsInput | string
-  keyalias?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -331,9 +313,8 @@ export type ProjectUpdateManyMutationInput = {
 export type ProjectUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  keystore?: Prisma.StringFieldUpdateOperationsInput | string
+  keystore?: Prisma.BytesFieldUpdateOperationsInput | Uint8Array
   keypass?: Prisma.StringFieldUpdateOperationsInput | string
-  keyalias?: Prisma.StringFieldUpdateOperationsInput | string
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -354,7 +335,6 @@ export type ProjectCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   keystore?: Prisma.SortOrder
   keypass?: Prisma.SortOrder
-  keyalias?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -365,7 +345,6 @@ export type ProjectMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   keystore?: Prisma.SortOrder
   keypass?: Prisma.SortOrder
-  keyalias?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -376,7 +355,6 @@ export type ProjectMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   keystore?: Prisma.SortOrder
   keypass?: Prisma.SortOrder
-  keyalias?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -424,12 +402,15 @@ export type ProjectUncheckedUpdateManyWithoutCreatorNestedInput = {
   deleteMany?: Prisma.ProjectScalarWhereInput | Prisma.ProjectScalarWhereInput[]
 }
 
+export type BytesFieldUpdateOperationsInput = {
+  set?: Uint8Array
+}
+
 export type ProjectCreateWithoutCreatorInput = {
   id?: string
   name: string
-  keystore: string
+  keystore: Uint8Array
   keypass: string
-  keyalias: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -437,9 +418,8 @@ export type ProjectCreateWithoutCreatorInput = {
 export type ProjectUncheckedCreateWithoutCreatorInput = {
   id?: string
   name: string
-  keystore: string
+  keystore: Uint8Array
   keypass: string
-  keyalias: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -476,9 +456,8 @@ export type ProjectScalarWhereInput = {
   NOT?: Prisma.ProjectScalarWhereInput | Prisma.ProjectScalarWhereInput[]
   id?: Prisma.StringFilter<"Project"> | string
   name?: Prisma.StringFilter<"Project"> | string
-  keystore?: Prisma.StringFilter<"Project"> | string
+  keystore?: Prisma.BytesFilter<"Project"> | Uint8Array
   keypass?: Prisma.StringFilter<"Project"> | string
-  keyalias?: Prisma.StringFilter<"Project"> | string
   creatorId?: Prisma.StringFilter<"Project"> | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
@@ -487,9 +466,8 @@ export type ProjectScalarWhereInput = {
 export type ProjectCreateManyCreatorInput = {
   id?: string
   name: string
-  keystore: string
+  keystore: Uint8Array
   keypass: string
-  keyalias: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -497,9 +475,8 @@ export type ProjectCreateManyCreatorInput = {
 export type ProjectUpdateWithoutCreatorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  keystore?: Prisma.StringFieldUpdateOperationsInput | string
+  keystore?: Prisma.BytesFieldUpdateOperationsInput | Uint8Array
   keypass?: Prisma.StringFieldUpdateOperationsInput | string
-  keyalias?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -507,9 +484,8 @@ export type ProjectUpdateWithoutCreatorInput = {
 export type ProjectUncheckedUpdateWithoutCreatorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  keystore?: Prisma.StringFieldUpdateOperationsInput | string
+  keystore?: Prisma.BytesFieldUpdateOperationsInput | Uint8Array
   keypass?: Prisma.StringFieldUpdateOperationsInput | string
-  keyalias?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -517,9 +493,8 @@ export type ProjectUncheckedUpdateWithoutCreatorInput = {
 export type ProjectUncheckedUpdateManyWithoutCreatorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  keystore?: Prisma.StringFieldUpdateOperationsInput | string
+  keystore?: Prisma.BytesFieldUpdateOperationsInput | Uint8Array
   keypass?: Prisma.StringFieldUpdateOperationsInput | string
-  keyalias?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -531,7 +506,6 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name?: boolean
   keystore?: boolean
   keypass?: boolean
-  keyalias?: boolean
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -543,7 +517,6 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   keystore?: boolean
   keypass?: boolean
-  keyalias?: boolean
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -555,7 +528,6 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   keystore?: boolean
   keypass?: boolean
-  keyalias?: boolean
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -567,13 +539,12 @@ export type ProjectSelectScalar = {
   name?: boolean
   keystore?: boolean
   keypass?: boolean
-  keyalias?: boolean
   creatorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "keystore" | "keypass" | "keyalias" | "creatorId" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "keystore" | "keypass" | "creatorId" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -592,9 +563,8 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    keystore: string
+    keystore: Uint8Array
     keypass: string
-    keyalias: string
     creatorId: string
     createdAt: Date
     updatedAt: Date
@@ -1024,9 +994,8 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
 export interface ProjectFieldRefs {
   readonly id: Prisma.FieldRef<"Project", 'String'>
   readonly name: Prisma.FieldRef<"Project", 'String'>
-  readonly keystore: Prisma.FieldRef<"Project", 'String'>
+  readonly keystore: Prisma.FieldRef<"Project", 'Bytes'>
   readonly keypass: Prisma.FieldRef<"Project", 'String'>
-  readonly keyalias: Prisma.FieldRef<"Project", 'String'>
   readonly creatorId: Prisma.FieldRef<"Project", 'String'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>

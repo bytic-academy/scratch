@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
@@ -22,7 +22,7 @@ const page = () => {
       identifier: "",
       password: "",
     },
-    resolver: zodResolver(UserLoginSchema),
+    resolver: standardSchemaResolver(UserLoginSchema),
   });
 
   const { mutate: login } = useMutation(

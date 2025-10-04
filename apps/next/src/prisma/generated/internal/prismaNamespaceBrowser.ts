@@ -55,7 +55,6 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   keystore: 'keystore',
   keypass: 'keypass',
-  keyalias: 'keyalias',
   creatorId: 'creatorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

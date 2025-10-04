@@ -7,14 +7,14 @@
  * need to use are documented accordingly near the end.
  */
 
-import { cookies } from "next/headers";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 // import { auth } from "~/server/auth";
 import { db } from "~/server/db";
-import { auth, getSession, setSession } from "../auth";
+import { auth } from "../auth";
+import { FileStorage } from "../FileStorage";
 
 /**
  * 1. CONTEXT
@@ -34,7 +34,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
     db,
     user,
-    // session,
+    fs: new FileStorage(),
     ...opts,
   };
 };

@@ -1,29 +1,33 @@
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import z from "zod";
 
-import { createP12KeystoreBuffer } from "@acme/packager";
+import { generateP12KeystoreBuffer } from "@acme/packager";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  CreateProjectSchema,
+  DeleteProjectSchema,
+  QueryProjectSchema,
+  UpdateProjectIconSchema,
+  UpdateProjectSchema,
+} from "~/server/schemas/project";
 import { generateRandomString } from "~/utils/str";
-
-const CreateProjectSchema = z.object({
-  name: z.string().min(3).max(255),
-});
+import { convertToPng } from "../utils/image";
 
 export const projectRouter = createTRPCRouter({
   create: protectedProcedure
     .input(CreateProjectSchema)
-    .query(async ({ input, ctx: { db, user } }) => {
-      const keyalias = generateRandomString(12);
+    .mutation(async ({ input, ctx: { db, user } }) => {
       const keypass = generateRandomString(32);
-      const keystore = await createP12KeystoreBuffer({ keyalias, keypass });
+      const keystore = generateP12KeystoreBuffer({
+        keypass,
+      });
 
       const project = await db.project.create({
         data: {
           name: input.name,
-          keyalias,
           keypass,
-          keystore: keystore.toString(),
+          keystore: keystore,
           creator: {
             connect: {
               id: user.id,
@@ -39,12 +43,7 @@ export const projectRouter = createTRPCRouter({
     }),
 
   update: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        data: CreateProjectSchema,
-      }),
-    )
+    .input(UpdateProjectSchema)
     .mutation(async ({ input, ctx: { db, user } }) => {
       const project = await db.project.findUnique({
         where: { id: input.id, creatorId: user.id },
@@ -63,23 +62,74 @@ export const projectRouter = createTRPCRouter({
       });
     }),
 
-  delete: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
-    .mutation(async ({ input, ctx: { db, user } }) => {
-      await db.project.delete({
-        where: {
-          id: input.id,
-          creatorId: user.id,
-        },
+  updateIcon: protectedProcedure
+    .input(UpdateProjectIconSchema)
+    .mutation(async ({ input, ctx: { db, user, fs } }) => {
+      const project = await db.project.findUnique({
+        where: { id: input.projectId, creatorId: user.id },
       });
+
+      if (!project) {
+        return new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      const file = await convertToPng(await input.file.arrayBuffer());
+
+      await fs.saveProjectIcon(project.id, file);
+    }),
+
+  loadIcon: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ input, ctx: { db, user, fs } }) => {
+      const project = await db.project.findUnique({
+        where: { id: input.projectId, creatorId: user.id },
+      });
+
+      if (!project) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      const buffer = await fs.getProjectIcon(project.id);
+
+      if (!buffer) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project has not any icons",
+        });
+      }
+
+      console.log(buffer);
+
+      return new Uint8Array(buffer);
+    }),
+
+  delete: protectedProcedure
+    .input(DeleteProjectSchema)
+    .mutation(async ({ input, ctx: { db, user, fs } }) => {
+      const project = await db.project.findUnique({
+        where: { id: input.id, creatorId: user.id },
+      });
+
+      if (!project) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      await fs.removeProjectData(project.id);
+
+      await db.project.delete({ where: { id: project.id } });
     }),
 
   getAll: protectedProcedure
-    .input(z.object({ page: z.number() }))
+    .input(QueryProjectSchema)
     .query(async ({ input, ctx: { db, user } }) => {
       const PAGE_SIZE = 20;
 
