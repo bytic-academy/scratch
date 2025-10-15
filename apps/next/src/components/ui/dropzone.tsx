@@ -1,17 +1,22 @@
 import React, { useRef } from "react";
-import { ImageIcon } from "lucide-react";
-import { SupportedIconFormats, UpdateProjectIconSchema } from "~/server/schemas/project";
 
-type DropzoneProps = {
+import { cn } from "~/lib/utils";
+
+type DropzoneProps = React.PropsWithChildren<{
   onChange: (file: File) => void;
+  supportedFormats: string | string[];
   name?: string;
   disabled?: boolean;
-};
+  className?: string;
+}>;
 
 export const Dropzone: React.FC<DropzoneProps> = ({
   onChange,
+  supportedFormats,
   disabled,
   name,
+  className,
+  children,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -20,10 +25,13 @@ export const Dropzone: React.FC<DropzoneProps> = ({
       onClick={() => {
         inputRef.current?.click();
       }}
-      className="flex h-32 w-full cursor-pointer hover:bg-accent flex-col items-center justify-center gap-4 rounded-md border-3 border-dashed text-sm"
+      className={cn(
+        "hover:bg-accent flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-md border-3 border-dashed text-sm",
+        className,
+      )}
     >
-      <ImageIcon className="size-8 stroke-1" />
-      برای بارگزاری آیکون اینجا کلیک کن
+      {children}
+
       <input
         ref={inputRef}
         disabled={disabled}
@@ -36,7 +44,11 @@ export const Dropzone: React.FC<DropzoneProps> = ({
 
           onChange(file);
         }}
-        accept={SupportedIconFormats.join(",")}
+        accept={
+          Array.isArray(supportedFormats)
+            ? supportedFormats.join(",")
+            : supportedFormats
+        }
         hidden
       />
     </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DownloadIcon, TrashIcon } from "lucide-react";
+import { DownloadIcon, HammerIcon, TrashIcon } from "lucide-react";
 
 import type { RouterOutput } from "~/server/api/root";
 import { Button } from "~/components/ui/button";
@@ -36,6 +36,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
     trpc.project.delete.mutationOptions({
       onSuccess() {
         setIsDeleteDialogOpen(false);
+        refetchQueries(trpc.project.getAll.queryFilter());
+      },
+    }),
+  );
+
+  const { mutate: buildProject, isPending } = useMutation(
+    trpc.project.build.mutationOptions({
+      onSuccess() {
         refetchQueries(trpc.project.getAll.queryFilter());
       },
     }),
@@ -76,6 +84,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
       <CardFooter className="gap-2 px-4">
         <Button>
           دانلود <DownloadIcon />
+        </Button>
+
+        <Button
+          onClick={() => {
+            buildProject({ projectId: data.id });
+          }}
+          disabled={isPending}
+        >
+          بیلد <HammerIcon />
         </Button>
 
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

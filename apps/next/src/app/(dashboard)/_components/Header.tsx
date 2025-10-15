@@ -33,13 +33,19 @@ import {
 import { Input } from "~/components/ui/input";
 import {
   CreateProjectSchema,
+  SupportedIconFormats,
+  SupportedScratchSourceFormats,
   UpdateProjectIconSchema,
+  UpdateProjectScratchSourceSchema,
 } from "~/server/schemas/project";
 import { trpc } from "~/utils/trpc";
 
 import "react-image-crop/dist/ReactCrop.css";
 
+import { FileCodeIcon, ImageIcon } from "lucide-react";
+
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { cn } from "~/lib/utils";
 
 /**
  * Crop an image using react-image-crop output and return a File object
@@ -106,6 +112,7 @@ const Header: React.FC = () => {
         x: number;
         y: number;
       };
+      scratchSource: z.infer<typeof UpdateProjectScratchSourceSchema>["file"];
     }
   >({
     resolver: standardSchemaResolver(
@@ -118,6 +125,7 @@ const Header: React.FC = () => {
           y: z.number(),
           fileUrl: z.string(),
         }),
+        scratchSource: UpdateProjectScratchSourceSchema.out.shape.file.out,
       }),
     ),
     defaultValues: {
@@ -130,6 +138,10 @@ const Header: React.FC = () => {
 
   const { mutateAsync: updateProjectIcon } = useMutation(
     trpc.project.updateIcon.mutationOptions(),
+  );
+
+  const { mutateAsync: updateProjectScratchSource } = useMutation(
+    trpc.project.updateScratchSource.mutationOptions(),
   );
 
   const { mutateAsync: createProject } = useMutation(
@@ -154,8 +166,8 @@ const Header: React.FC = () => {
               <Button>پروژه جدید</Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-md">
-              <ScrollArea className="max-h-[calc(100svw-128px)]" dir="rtl">
+            <DialogContent className="px-0 sm:max-w-md">
+              <ScrollArea className="max-h-[calc(100svh-128px)] px-6" dir="rtl">
                 <div className="flex flex-col gap-6">
                   <DialogHeader>
                     <DialogTitle>پروژه جدیدت رو اضافه کن</DialogTitle>
@@ -180,7 +192,6 @@ const Header: React.FC = () => {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="icon"
@@ -192,6 +203,9 @@ const Header: React.FC = () => {
                             <FormControl>
                               <Dropzone
                                 {...field}
+                                supportedFormats={SupportedIconFormats.join(
+                                  ",",
+                                )}
                                 onChange={(file) =>
                                   field.onChange({
                                     file,
@@ -202,7 +216,10 @@ const Header: React.FC = () => {
                                     y: 0,
                                   })
                                 }
-                              />
+                              >
+                                <ImageIcon className="size-8 stroke-1" />
+                                برای بارگزاری آیکون اینجا کلیک کن
+                              </Dropzone>
                             </FormControl>
                           )}
 
@@ -244,6 +261,32 @@ const Header: React.FC = () => {
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="scratchSource"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2 gap-2">
+                          <FormLabel>فایل اسکرچ</FormLabel>
+
+                          <FormControl>
+                            <Dropzone
+                              {...field}
+                              supportedFormats="*"
+                              onChange={(file) =>(console.log(file), field.onChange(file))}
+                              className={cn(field.value && "text-green-700")}
+                            >
+                              <FileCodeIcon className="size-8 stroke-1" />
+                              {field.value
+                                ? "آپلود شد! برای تغییرش میتونی دوباره کلیک کنی"
+                                : "برای بارگزاری فایل اسکرچ اینجا کلیک کن"}
+                            </Dropzone>
+                          </FormControl>
+
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <DialogFooter className="sm:justify-start">
@@ -256,7 +299,7 @@ const Header: React.FC = () => {
                     <Button
                       type="submit"
                       onClick={form.handleSubmit(
-                        async ({ icon, ...values }) => {
+                        async ({ icon, scratchSource, ...values }) => {
                           let isProjectCreated = false;
 
                           try {
@@ -264,17 +307,30 @@ const Header: React.FC = () => {
 
                             isProjectCreated = true;
 
-                            const formData = new FormData();
+                            const iconFormData = new FormData();
 
                             const croppedImage = await getCroppedImgFile(
                               icon.fileUrl,
                               icon,
                             );
 
-                            formData.set("projectId", createdProject.id);
-                            formData.set("file", croppedImage);
+                            iconFormData.set("projectId", createdProject.id);
+                            iconFormData.set("file", croppedImage);
 
-                            await updateProjectIcon(formData);
+                            const scratchSourceFormData = new FormData();
+
+                            scratchSourceFormData.set(
+                              "projectId",
+                              createdProject.id,
+                            );
+                            scratchSourceFormData.set("file", scratchSource);
+
+                            await Promise.allSettled([
+                              (updateProjectIcon(iconFormData),
+                              updateProjectScratchSource(
+                                scratchSourceFormData,
+                              )),
+                            ]);
                           } finally {
                             if (isProjectCreated) {
                               setIsOpen(false);

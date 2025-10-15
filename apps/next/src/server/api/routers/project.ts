@@ -1,7 +1,13 @@
 import { TRPCError } from "@trpc/server";
+import TurbowarpPackager from "@turbowarp/packager";
 import z from "zod";
 
-import { generateP12KeystoreBuffer } from "@acme/packager";
+import {
+  DockerExecuter,
+  generateP12KeystoreBuffer,
+  Packager,
+  Signer,
+} from "@acme/packager";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
@@ -10,6 +16,7 @@ import {
   QueryProjectSchema,
   UpdateProjectIconSchema,
   UpdateProjectSchema,
+  UpdateProjectScratchSourceSchema,
 } from "~/server/schemas/project";
 import { generateRandomString } from "~/utils/str";
 import { convertToPng } from "../utils/image";
@@ -17,7 +24,7 @@ import { convertToPng } from "../utils/image";
 export const projectRouter = createTRPCRouter({
   create: protectedProcedure
     .input(CreateProjectSchema)
-    .mutation(async ({ input, ctx: { db, user } }) => {
+    .mutation(async ({ input, ctx: { db, user, fs } }) => {
       const keypass = generateRandomString(32);
       const keystore = generateP12KeystoreBuffer({
         keypass,
@@ -27,7 +34,6 @@ export const projectRouter = createTRPCRouter({
         data: {
           name: input.name,
           keypass,
-          keystore: keystore,
           creator: {
             connect: {
               id: user.id,
@@ -35,6 +41,8 @@ export const projectRouter = createTRPCRouter({
           },
         },
       });
+
+      await fs.saveProjectKeystore(project.id, keystore);
 
       return {
         id: project.id,
@@ -60,6 +68,26 @@ export const projectRouter = createTRPCRouter({
         where: { id: input.id, creatorId: user.id },
         data: input.data,
       });
+    }),
+
+  updateScratchSource: protectedProcedure
+    .input(UpdateProjectScratchSourceSchema)
+    .mutation(async ({ input, ctx: { db, user, fs } }) => {
+      const project = await db.project.findUnique({
+        where: { id: input.projectId, creatorId: user.id },
+      });
+
+      if (!project) {
+        return new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      await fs.saveProjectScratchSource(
+        project.id,
+        Buffer.from(await input.file.arrayBuffer()),
+      );
     }),
 
   updateIcon: protectedProcedure
@@ -104,9 +132,73 @@ export const projectRouter = createTRPCRouter({
         });
       }
 
-      console.log(buffer);
-
       return new Uint8Array(buffer);
+    }),
+
+  build: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .mutation(async ({ input, ctx: { db, user, fs } }) => {
+      const project = (await db.project.findUnique({
+        where: { id: input.projectId, creatorId: user.id },
+      }))!;
+
+      const scratchFile = await fs.getProjectScratchSource(project.id);
+      const keystore = await fs.getProjectKeystore(project.id);
+
+      console.log("validating");
+      // validate inputs before build
+      if (!scratchFile || !keystore) return;
+
+      const loadedProject = await TurbowarpPackager.loadProject(scratchFile);
+      console.log("test");
+
+      const warpPackager = new TurbowarpPackager.Packager();
+
+      warpPackager.project = loadedProject;
+      warpPackager.options.autoplay = true;
+
+      console.log("and here");
+      const packageResult = await warpPackager.package();
+
+      const scratchHtml = Buffer.from(packageResult.data).toString("utf8");
+
+      const executer = new DockerExecuter();
+
+      await executer.start();
+
+      const packager = new Packager(
+        {
+          proxy: {
+            host: "192.168.100.96",
+            port: 8080,
+          },
+        },
+        executer,
+      );
+
+      console.log("initing");
+
+      await packager.init({
+        appId: `com.bytic.${project.creatorId}.${project.id}`,
+        appName: project.name,
+        scratchHtml,
+      });
+
+      console.log("build");
+      await packager.build();
+
+      console.log("writeFile");
+      await executer.writeFile(Signer.KEYSTORE_PATH, keystore);
+
+      const signer = new Signer({ storePass: project.keypass }, executer);
+
+      console.log("packager.sign");
+      const apk = await packager.sign(signer);
+
+      await executer.remove();
+
+      console.log("saveProjectApk");
+      await fs.saveProjectApk(project.id, apk);
     }),
 
   delete: protectedProcedure

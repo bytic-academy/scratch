@@ -45,3 +45,20 @@ export const UpdateProjectIconSchema = zfd.formData({
     z.property("type", z.enum(SupportedIconFormats)),
   ),
 });
+
+export const SupportedScratchSourceFormats = ["application/octet-stream"];
+
+export const UpdateProjectScratchSourceSchema = zfd.formData({
+  projectId: z.string(),
+  file: zfd.file(z.instanceof(File)).check(
+    z.property("name", z.string().endsWith(".sb3")),
+    z.property(
+      "size",
+      z
+        .number()
+        .min(1)
+        .max(1024 * 1024 * 50),
+    ),
+    z.property("type", z.enum(SupportedScratchSourceFormats)),
+  ),
+});

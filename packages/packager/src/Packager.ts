@@ -18,8 +18,8 @@ type AppOptions = {
 };
 
 type KeystoreOptions = {
-  name: string;
-  alias: string;
+  name?: string;
+  alias?: string;
   storePass: string;
 };
 
@@ -203,7 +203,10 @@ export class LocalExecuter extends Executer {
   }
 
   async rm(dir: string) {
-    await fs.promises.rm(path.join(this.resolveWorkdir(), dir), { force: true, recursive: true });
+    await fs.promises.rm(path.join(this.resolveWorkdir(), dir), {
+      force: true,
+      recursive: true,
+    });
   }
 }
 
@@ -280,14 +283,13 @@ export class Signer {
   static async generateKeystore(options: KeystoreOptions, executer: Executer) {
     const args = [
       "-genkeypair",
-      "-alias",
-      options.alias,
+      ...(options.alias ? ["-alias", options.alias] : []),
       "-keyalg",
       "RSA",
       "-keysize",
       "2048",
       "-keystore",
-      options.name + ".p12",
+      (options.name ?? "keystore") + ".p12",
       "-storepass",
       options.storePass,
       "-validity",
@@ -306,9 +308,8 @@ export class Signer {
     const args = [
       "sign",
       "--ks",
-      this.keystore.name + ".p12",
-      "--ks-key-alias",
-      this.keystore.alias,
+      (this.keystore.name ?? "keystore") + ".p12",
+      ...(this.keystore.alias ? ["--ks-key-alias", this.keystore.alias] : []),
       "--ks-pass",
       `pass:${this.keystore.storePass}`,
       "--out",

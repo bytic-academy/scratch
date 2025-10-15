@@ -53,7 +53,6 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  keystore: 'keystore',
   keypass: 'keypass',
   creatorId: 'creatorId',
   createdAt: 'createdAt',

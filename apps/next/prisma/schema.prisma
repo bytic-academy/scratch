@@ -34,7 +34,6 @@ model Project {
     name String
     // icon String
 
-    keystore Bytes
     keypass  String
 
     creator   User   @relation(fields: [creatorId], references: [id])
