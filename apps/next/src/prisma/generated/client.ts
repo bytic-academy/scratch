@@ -53,3 +53,8 @@ export type User = Prisma.UserModel
  * 
  */
 export type Project = Prisma.ProjectModel
+/**
+ * Model ProjectBuild
+ * 
+ */
+export type ProjectBuild = Prisma.ProjectBuildModel

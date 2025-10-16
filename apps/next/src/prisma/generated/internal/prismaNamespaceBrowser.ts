@@ -15,19 +15,50 @@
  */
 
 import * as runtime from "@prisma/client/runtime/index-browser"
+
 export type * from '../models'
 export type * from './prismaNamespace'
+
 export const Decimal = runtime.Decimal
+
+
+export const NullTypes = {
+  DbNull: runtime.objectEnumValues.classes.DbNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.DbNull),
+  JsonNull: runtime.objectEnumValues.classes.JsonNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.JsonNull),
+  AnyNull: runtime.objectEnumValues.classes.AnyNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.AnyNull),
+}
+/**
+ * Helper for filtering JSON entries that have `null` on the database (empty on the db)
+ *
+ * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
+ */
+export const DbNull = runtime.objectEnumValues.instances.DbNull
+/**
+ * Helper for filtering JSON entries that have JSON `null` values (not empty on the db)
+ *
+ * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
+ */
+export const JsonNull = runtime.objectEnumValues.instances.JsonNull
+/**
+ * Helper for filtering JSON entries that are `Prisma.DbNull` or `Prisma.JsonNull`
+ *
+ * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
+ */
+export const AnyNull = runtime.objectEnumValues.instances.AnyNull
+
+
 export const ModelName = {
   User: 'User',
-  Project: 'Project'
+  Project: 'Project',
+  ProjectBuild: 'ProjectBuild'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
 
-/**
+/*
  * Enums
  */
+
 export const TransactionIsolationLevel = runtime.makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
@@ -55,11 +86,22 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   keypass: 'keypass',
   creatorId: 'creatorId',
+  queuedAt: 'queuedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const ProjectBuildScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectBuildScalarFieldEnum = (typeof ProjectBuildScalarFieldEnum)[keyof typeof ProjectBuildScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -76,4 +118,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

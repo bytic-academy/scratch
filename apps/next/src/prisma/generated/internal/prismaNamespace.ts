@@ -87,12 +87,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 6.16.1
- * Query Engine version: 1c57fdcd7e44b29b9313256c76699e91c3ac3c43
+ * Prisma Client JS version: 6.17.1
+ * Query Engine version: 272a37d34178c2894197e17273bf937f25acdeac
  */
 export const prismaVersion: PrismaVersion = {
-  client: "6.16.1",
-  engine: "1c57fdcd7e44b29b9313256c76699e91c3ac3c43"
+  client: "6.17.1",
+  engine: "272a37d34178c2894197e17273bf937f25acdeac"
 }
 
 /**
@@ -106,32 +106,31 @@ export type InputJsonObject = runtime.InputJsonObject
 export type InputJsonArray = runtime.InputJsonArray
 export type InputJsonValue = runtime.InputJsonValue
 
+
 export const NullTypes = {
   DbNull: runtime.objectEnumValues.classes.DbNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.DbNull),
   JsonNull: runtime.objectEnumValues.classes.JsonNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.JsonNull),
   AnyNull: runtime.objectEnumValues.classes.AnyNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.AnyNull),
 }
-
 /**
  * Helper for filtering JSON entries that have `null` on the database (empty on the db)
  *
  * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
  */
 export const DbNull = runtime.objectEnumValues.instances.DbNull
-
 /**
  * Helper for filtering JSON entries that have JSON `null` values (not empty on the db)
  *
  * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
  */
 export const JsonNull = runtime.objectEnumValues.instances.JsonNull
-
 /**
  * Helper for filtering JSON entries that are `Prisma.DbNull` or `Prisma.JsonNull`
  *
  * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
  */
 export const AnyNull = runtime.objectEnumValues.instances.AnyNull
+
 
 type SelectAndInclude = {
   select: any
@@ -390,7 +389,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  Project: 'Project'
+  Project: 'Project',
+  ProjectBuild: 'ProjectBuild'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "project"
+    modelProps: "user" | "project" | "projectBuild"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -558,6 +558,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProjectBuild: {
+      payload: Prisma.$ProjectBuildPayload<ExtArgs>
+      fields: Prisma.ProjectBuildFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectBuildFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectBuildFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectBuildFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectBuildFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectBuildFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectBuildCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectBuildCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectBuildCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectBuildDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>
+        }
+        update: {
+          args: Prisma.ProjectBuildUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectBuildDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectBuildUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectBuildUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectBuildUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectBuildPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectBuildAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectBuild>
+        }
+        groupBy: {
+          args: Prisma.ProjectBuildGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectBuildGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectBuildCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectBuildCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -614,11 +688,22 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   keypass: 'keypass',
   creatorId: 'creatorId',
+  queuedAt: 'queuedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const ProjectBuildScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectBuildScalarFieldEnum = (typeof ProjectBuildScalarFieldEnum)[keyof typeof ProjectBuildScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -635,6 +720,14 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -773,6 +866,7 @@ export interface PrismaClientOptions {
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   project?: Prisma.ProjectOmit
+  projectBuild?: Prisma.ProjectBuildOmit
 }
 
 /* Types for Logging */

@@ -1,13 +1,7 @@
 import { TRPCError } from "@trpc/server";
-import TurbowarpPackager from "@turbowarp/packager";
 import z from "zod";
 
-import {
-  DockerExecuter,
-  generateP12KeystoreBuffer,
-  Packager,
-  Signer,
-} from "@acme/packager";
+import { generateP12KeystoreBuffer } from "@acme/packager";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
@@ -138,67 +132,31 @@ export const projectRouter = createTRPCRouter({
   build: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .mutation(async ({ input, ctx: { db, user, fs } }) => {
-      const project = (await db.project.findUnique({
-        where: { id: input.projectId, creatorId: user.id },
-      }))!;
+      const project = await db.project.findUnique({
+        where: { id: input.projectId, creatorId: user.id, queuedAt: null },
+      });
+
+      if (!project) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "project not found",
+        });
+      }
 
       const scratchFile = await fs.getProjectScratchSource(project.id);
       const keystore = await fs.getProjectKeystore(project.id);
 
-      console.log("validating");
-      // validate inputs before build
-      if (!scratchFile || !keystore) return;
+      if (!scratchFile || !keystore) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "scratch file or keystore not exists",
+        });
+      }
 
-      const loadedProject = await TurbowarpPackager.loadProject(scratchFile);
-      console.log("test");
-
-      const warpPackager = new TurbowarpPackager.Packager();
-
-      warpPackager.project = loadedProject;
-      warpPackager.options.autoplay = true;
-
-      console.log("and here");
-      const packageResult = await warpPackager.package();
-
-      const scratchHtml = Buffer.from(packageResult.data).toString("utf8");
-
-      const executer = new DockerExecuter();
-
-      await executer.start();
-
-      const packager = new Packager(
-        {
-          proxy: {
-            host: "192.168.100.96",
-            port: 8080,
-          },
-        },
-        executer,
-      );
-
-      console.log("initing");
-
-      await packager.init({
-        appId: `com.bytic.${project.creatorId}.${project.id}`,
-        appName: project.name,
-        scratchHtml,
+      await db.project.update({
+        where: { id: input.projectId, creatorId: user.id },
+        data: { queuedAt: new Date() },
       });
-
-      console.log("build");
-      await packager.build();
-
-      console.log("writeFile");
-      await executer.writeFile(Signer.KEYSTORE_PATH, keystore);
-
-      const signer = new Signer({ storePass: project.keypass }, executer);
-
-      console.log("packager.sign");
-      const apk = await packager.sign(signer);
-
-      await executer.remove();
-
-      console.log("saveProjectApk");
-      await fs.saveProjectApk(project.id, apk);
     }),
 
   delete: protectedProcedure
