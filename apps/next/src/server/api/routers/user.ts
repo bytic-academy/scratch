@@ -18,7 +18,7 @@ export const userRouter = createTRPCRouter({
       });
 
       if (foundUser)
-        return new TRPCError({
+        throw new TRPCError({
           code: "CONFLICT",
           message: "Username already taken",
         });
@@ -48,7 +48,7 @@ export const userRouter = createTRPCRouter({
       });
 
       if (!user)
-        return new TRPCError({
+        throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Incorrect credentials",
         });
@@ -56,7 +56,7 @@ export const userRouter = createTRPCRouter({
       const isPasswordCorrect = await compare(password, user.password);
 
       if (!isPasswordCorrect)
-        return new TRPCError({
+        throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Incorrect credentials",
         });

@@ -1,3 +1,5 @@
+// lib/cron.ts
+import { setInterval } from "node:timers/promises";
 import TurbowarpPackager from "@turbowarp/packager";
 
 import { DockerExecuter, Packager, Signer } from "@acme/packager";
@@ -12,10 +14,11 @@ const fs = new FileStorage();
 const build = async (project: Project) => {
   const scratchFile = await fs.getProjectScratchSource(project.id);
   const keystore = await fs.getProjectKeystore(project.id);
+  const icon = await fs.getProjectIcon(project.id);
 
   console.log("validating");
   // validate inputs before build
-  if (!scratchFile || !keystore) return;
+  if (!scratchFile || !keystore || !icon) return;
 
   const loadedProject = await TurbowarpPackager.loadProject(scratchFile);
   console.log("test");
@@ -35,15 +38,7 @@ const build = async (project: Project) => {
   try {
     await executer.start();
 
-    const packager = new Packager(
-      {
-        proxy: {
-          host: "192.168.100.96",
-          port: 8080,
-        },
-      },
-      executer,
-    );
+    const packager = new Packager({ offline: true }, executer);
 
     console.log("initing");
 
@@ -51,6 +46,7 @@ const build = async (project: Project) => {
       appId: `com.bytic.${project.creatorId}.${project.id}`,
       appName: project.name,
       scratchHtml,
+      // icon,
     });
 
     console.log("build");
@@ -71,10 +67,9 @@ const build = async (project: Project) => {
   }
 };
 
-async function processBuildProject() {
-  while (true) {
-    const project = await db.$transaction(async (tx) => {
-      const [project] = await tx.$queryRaw<Project[]>`
+async function runTask() {
+  const project = await db.$transaction(async (tx) => {
+    const [project] = await tx.$queryRaw<Project[]>`
         SELECT * FROM "Project"
         WHERE "queuedAt" IS NOT NULL
         ORDER BY "queuedAt" ASC
@@ -82,28 +77,67 @@ async function processBuildProject() {
         FOR UPDATE
       `;
 
-      if (!project) return null;
+    if (!project) return null;
 
-      await tx.project.update({
-        where: { id: project.id },
-        data: { queuedAt: null },
-      });
-
-      return project;
+    await tx.project.update({
+      where: { id: project.id },
+      data: { queuedAt: null, isBuilding: true },
     });
 
-    if (!project) {
-      await sleep(1000);
-      continue;
-    }
+    return project;
+  });
 
-    try {
-      await build(project);
-    } catch (e) {}
+  console.log("project", project);
 
-    await sleep(1000);
+  if (!project) {
+    return;
   }
+
+  try {
+    await build(project);
+
+    await db.projectBuild.create({
+      data: {
+        project: {
+          connect: {
+            id: project.id,
+          },
+        },
+      },
+    });
+  } catch (e) {
+    console.log(`Failed building project "${project.id}". reason:`, e);
+  }
+
+  await db.project.update({
+    where: { id: project.id },
+    data: { isBuilding: false },
+  });
 }
 
-void processBuildProject();
-void processBuildProject();
+// Your async task
+// async function doTask(id: number) {
+//   console.log(`[${new Date().toISOString()}] Job ${id} started`);
+
+//   // Simulate an async operation
+//   await new Promise((r) => setTimeout(r, 500));
+
+//   console.log(`[${new Date().toISOString()}] Job ${id} finished`);
+// }
+
+// Start cron jobs (call this once from app startup)
+// export function startCrons() {
+// Job 1
+(async () => {
+  for await (const _ of setInterval(1000)) {
+    await runTask();
+  }
+})();
+
+// Job 2
+(async () => {
+  for await (const _ of setInterval(1000)) {
+    await runTask();
+  }
+})();
+// }

@@ -10,21 +10,17 @@ const run = async () => {
   await executer.start();
 
   try {
-    const packager = new Packager(
-      {
-        offline: true,
-        proxy: {
-          host: "192.168.100.96",
-          port: 8080,
-        },
-      },
-      executer,
+    const packager = new Packager({ offline: true }, executer);
+
+    const icon = await fs.promises.readFile(
+      path.join(process.cwd(), "assets", "icon-only.png"),
     );
 
     await packager.init({
-      appId: "com.test4.app",
-      appName: "Test 4 Appy",
+      appId: "com.dummy.app",
+      appName: "Test dummy App",
       scratchHtml: "Hello World",
+      icon,
     });
 
     await packager.build();
@@ -42,7 +38,7 @@ const run = async () => {
 
     const dir = path.join(process.cwd(), "/outputs");
     await fs.promises.mkdir(dir, { recursive: true });
-    await fs.promises.writeFile(path.join(dir, "test4.apk"), app);
+    await fs.promises.writeFile(path.join(dir, "test.apk"), app);
   } finally {
     await executer.remove();
   }

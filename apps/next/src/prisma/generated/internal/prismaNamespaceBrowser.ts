@@ -87,6 +87,7 @@ export const ProjectScalarFieldEnum = {
   keypass: 'keypass',
   creatorId: 'creatorId',
   queuedAt: 'queuedAt',
+  isBuilding: 'isBuilding',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

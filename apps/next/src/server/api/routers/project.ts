@@ -133,7 +133,7 @@ export const projectRouter = createTRPCRouter({
     .input(z.object({ projectId: z.string() }))
     .mutation(async ({ input, ctx: { db, user, fs } }) => {
       const project = await db.project.findUnique({
-        where: { id: input.projectId, creatorId: user.id, queuedAt: null },
+        where: { id: input.projectId, creatorId: user.id },
       });
 
       if (!project) {
@@ -141,6 +141,10 @@ export const projectRouter = createTRPCRouter({
           code: "NOT_FOUND",
           message: "project not found",
         });
+      }
+
+      if (project.isBuilding || project.queuedAt) {
+        return;
       }
 
       const scratchFile = await fs.getProjectScratchSource(project.id);
@@ -154,7 +158,7 @@ export const projectRouter = createTRPCRouter({
       }
 
       await db.project.update({
-        where: { id: input.projectId, creatorId: user.id },
+        where: { id: project.id },
         data: { queuedAt: new Date() },
       });
     }),

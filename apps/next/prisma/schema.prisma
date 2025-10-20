@@ -37,8 +37,9 @@ model Project {
     creator   User   @relation(fields: [creatorId], references: [id])
     creatorId String
 
-    queuedAt DateTime?
-    builds   ProjectBuild[]
+    queuedAt   DateTime?
+    isBuilding Boolean        @default(false)
+    builds     ProjectBuild[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

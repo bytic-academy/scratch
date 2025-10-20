@@ -15,6 +15,7 @@ type AppOptions = {
   appId: string;
   appName: string;
   scratchHtml: string;
+  icon?: Buffer;
 };
 
 type KeystoreOptions = {
@@ -227,9 +228,17 @@ export class Packager {
   async init(options: AppOptions) {
     this.executer.workdir("/app/packages/android-app");
 
-    const scratchPath = path.join("public", "scratch.html");
+    await this.executer.writeFile(
+      path.join("public", "scratch.html"),
+      options.scratchHtml,
+    );
 
-    await this.executer.writeFile(scratchPath, options.scratchHtml);
+    if (options.icon) {
+      await this.executer.writeFile(
+        path.join("assets", "logo.png"),
+        options.icon,
+      );
+    }
 
     const env = {
       APP_ID: options.appId,
@@ -238,6 +247,8 @@ export class Packager {
 
     await this.executer.run("pnpm", ["build"], { env });
     await this.executer.run("npx", ["cap", "add", "android"], { env });
+    await this.executer.run("npx", ["cap", "sync", "android"], { env });
+    await this.executer.run("pnpm", ["capacitor-assets", "generate"], { env });
     await this.executer.run("npx", ["cap", "sync", "android"], { env });
   }
 

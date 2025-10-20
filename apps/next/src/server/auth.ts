@@ -17,7 +17,7 @@ export const setSession = async (id: string) => {
   cookieStore.set(ACCESS_TOKEN_KEY, token, {
     httpOnly: env.NODE_ENV === "production",
     secure: env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: 60 * 60 * 24 * 30 * 6,
   });
 };
 
