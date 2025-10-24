@@ -1,0 +1,81 @@
+name: packager
+
+on:
+  workflow_dispatch: 
+    inputs:
+      USER_ID:
+        type: string
+        required: true
+        description: USER_ID
+      APP_ID: 
+        type: string
+        required: true
+        description: APP_ID
+      APP_NAME: 
+        type: string
+        required: true
+        description: APP_NAME
+      HTML_FILE: 
+        type: string
+        required: true
+        description: HTML_FILE
+      ICON_FILE: 
+        type: string
+        required: true
+        description: ICON_FILE
+      KEYSTORE_FILE: 
+        type: string
+        required: true
+        description: KEYSTORE_FILE
+      KEYSTORE_PASS: 
+        type: string
+        required: true
+        description: KEYSTORE_PASS
+      OUTPUT_PATH: 
+        type: string
+        required: false
+        description: OUTPUT_PATH
+      CALLBACK_URL: 
+        type: string
+        required: false
+        description: CALLBACK_URL
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: build-${{ github.event.inputs.app_id }}
+      cancel-in-progress: false
+
+    container:
+      image: arashdev/bytic-scratch-packager:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build App
+        timeout-minutes: 2
+        working-directory: /app
+        run: |
+          pnpm --filter @acme/packager build:app
+        env:
+          APP_ID: ${{ github.event.inputs.APP_ID }}
+          APP_NAME: ${{ github.event.inputs.APP_NAME }}
+          HTML_FILE: ${{ github.event.inputs.HTML_FILE }}
+          ICON_FILE: ${{ github.event.inputs.ICON_FILE }}
+          KEYSTORE_FILE: ${{ github.event.inputs.KEYSTORE_FILE }}
+          KEYSTORE_PASS: ${{ github.event.inputs.KEYSTORE_PASS }}
+          OUTPUT_PATH: ${{ github.event.inputs.OUTPUT_PATH }}
+          CALLBACK_URL: ${{ github.event.inputs.CALLBACK_URL }}
+    
+      - name: Notify callback if build failed
+        if: ${{ failure() }}  # Runs if any previous step failed (including timeout)
+        run: |
+          if [ -n "${{ github.event.inputs.CALLBACK_URL }}" ]; then
+            curl -X GET "${{ github.event.inputs.CALLBACK_URL }}?status=failed"
+          fi

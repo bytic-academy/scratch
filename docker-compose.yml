@@ -1,0 +1,44 @@
+name: bytic-scratch
+
+services:
+  packager:
+    container_name: packager
+    build:
+      context: .
+      dockerfile: packages/packager/Dockerfile
+      tags:
+        - arashdev/bytic-scratch-packager
+
+  db:
+    container_name: db
+    image: postgres:18
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data/18
+    env_file:
+      - .env.production
+
+  migrate:
+    container_name: migrate
+    build:
+      context: .
+      dockerfile: apps/next/Dockerfile.migrate
+    depends_on:
+      - db
+    env_file:
+      - .env.production
+
+  next:
+    container_name: next
+    build:
+      context: .
+      dockerfile: apps/next/Dockerfile
+    depends_on:
+      - migrate
+    ports:
+      - 3000:3000
+    env_file:
+      - .env.production
+    volumes:
+      - ./data/files:/app/apps/next/data

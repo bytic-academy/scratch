@@ -41,7 +41,7 @@ export function generateP12KeystoreBuffer({
 }
 
 export const parseP12KeystoreBuffer = (
-  keystore: Buffer | Uint8Array,
+  keystore: ArrayBuffer,
   keypass: string,
 ) => {
   // Convert back to forge ASN.1

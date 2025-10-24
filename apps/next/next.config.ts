@@ -7,7 +7,8 @@ import type { NextConfig } from "next";
 import "./src/env";
 
 const config: NextConfig = {
-  serverExternalPackages: ["@turbowarp/packager"],
+  output: "standalone",
+  serverExternalPackages: ["@turbowarp/packager", "dockerode"],
 };
 
 export default config;

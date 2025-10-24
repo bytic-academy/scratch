@@ -1,6 +1,6 @@
 // lib/cron.ts
 import { setInterval } from "node:timers/promises";
-import TurbowarpPackager from "@turbowarp/packager";
+import * as TurbowarpPackager from "@turbowarp/packager";
 
 import { DockerExecuter, Packager, Signer } from "@acme/packager";
 

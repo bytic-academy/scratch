@@ -14,8 +14,8 @@ type BuilderOptions = {
 type AppOptions = {
   appId: string;
   appName: string;
-  scratchHtml: string;
-  icon?: Buffer;
+  scratchHtml: string | Buffer;
+  icon?: string | Buffer;
 };
 
 type KeystoreOptions = {
@@ -38,7 +38,7 @@ abstract class Executer {
   abstract run(
     cmd: string,
     args?: (string | number)[],
-    options?: { cwd?: string; env?: NodeJS.ProcessEnv },
+    options?: { cwd?: string; env?: Partial<NodeJS.ProcessEnv> },
   ): Promise<void>;
   abstract writeFile(filePath: string, content: string | Buffer): Promise<void>;
   abstract readFile(filePath: string): Promise<Buffer>;
@@ -65,12 +65,25 @@ export class DockerExecuter extends Executer {
 
   async start() {
     this._container = await this.docker.createContainer({
-      Image: "packager-packager",
-      name: "packager-" + crypto.randomUUID(),
+      Image: process.env.PACKAGER_IMAGE_NAME,
+      name: `packager-${this.formatDate(new Date())}`,
       Tty: true,
     });
 
     await this._container.start();
+  }
+
+  private formatDate(date: Date) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0"); // Months 0-11
+    const dd = String(date.getDate()).padStart(2, "0");
+
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
+    const ss = String(date.getSeconds()).padStart(2, "0");
+
+    // Docker-safe format: 2025-10-22_18-35-12
+    return `${yyyy}-${mm}-${dd}_${hh}-${min}-${ss}`;
   }
 
   async run(
@@ -86,7 +99,7 @@ export class DockerExecuter extends Executer {
     const exec = await this.container.exec({
       Cmd: [cmd, ...args.map((a) => a.toString())],
       Env: Object.entries({
-        // ...process.env,
+        ...process.env,
         ...options.env,
       }).map(([k, v]) => `${k}=${v}`),
       AttachStdout: true,

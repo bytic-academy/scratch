@@ -24,3 +24,5 @@ onlyBuiltDependencies:
 publicHoistPattern:
   - "@turbowarp/packager"
   - "@turbowarp/scaffolding"
+overrides:
+  minimatch: 10.0.2

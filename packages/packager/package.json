@@ -13,7 +13,7 @@
   "scripts": {
     "build:dummy": "tsx scripts/build-dummy.ts",
     "build:image": "sh ./build-docker.sh",
-    "build:app": "tsx scripts/build-app.ts",
+    "build:app": "tsx scripts/build-app.ts --",
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",

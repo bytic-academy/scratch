@@ -38,7 +38,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env
+# .env
 .env*.local
 
 # vercel
@@ -50,3 +50,5 @@ dist/
 
 # turbo
 .turbo
+
+/data
