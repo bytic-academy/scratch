@@ -1,6 +1,6 @@
 // index.d.ts
 
-declare module '@turbowarp/packager' {
+declare module "@turbowarp/packager" {
   /**
    * Progress callback invoked during project loading.
    * @param type A progress “type” string (e.g. "assets", "compress", etc.)
@@ -78,7 +78,7 @@ declare module '@turbowarp/packager' {
     /**
      * Add an event listener for progress or other custom events.
      * The class implements a minimal event-like API (not a full EventTarget).
-     * 
+     *
      * Known events include:
      *  - 'zip-progress'
      *  - 'large-asset-fetch'
@@ -88,7 +88,7 @@ declare module '@turbowarp/packager' {
      */
     addEventListener(
       eventName: string,
-      listener: (ev: { detail: any }) => void
+      listener: (ev: { detail: any }) => void,
     ): void;
   }
 
@@ -100,7 +100,7 @@ declare module '@turbowarp/packager' {
    */
   function loadProject(
     projectData: ArrayBuffer | Uint8Array | Buffer,
-    progressCallback?: ProgressCallback
+    progressCallback?: ProgressCallback,
   ): Promise<LoadedProject>;
 
   // Default export is the class or object with loadProject, etc.
@@ -111,4 +111,8 @@ declare module '@turbowarp/packager' {
   };
 
   export = PackagerModule;
+}
+
+declare module "@prisma/nextjs-monorepo-workaround-plugin" {
+  export class PrismaPlugin {}
 }
