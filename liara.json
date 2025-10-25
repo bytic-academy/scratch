@@ -1,0 +1,9 @@
+{
+  "app": "bytic-scratch-packager-frontend",
+  "port": 3000,
+  "build": {
+    "location": "iran",
+    "dockerfile": "apps/next/Dockerfile"
+  },
+  "disks": []
+}

@@ -25,6 +25,7 @@ export type AggregateProjectBuild = {
 
 export type ProjectBuildMinAggregateOutputType = {
   id: string | null
+  status: $Enums.ProjectBuildStatus | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -32,6 +33,7 @@ export type ProjectBuildMinAggregateOutputType = {
 
 export type ProjectBuildMaxAggregateOutputType = {
   id: string | null
+  status: $Enums.ProjectBuildStatus | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,6 +41,7 @@ export type ProjectBuildMaxAggregateOutputType = {
 
 export type ProjectBuildCountAggregateOutputType = {
   id: number
+  status: number
   projectId: number
   createdAt: number
   updatedAt: number
@@ -48,6 +51,7 @@ export type ProjectBuildCountAggregateOutputType = {
 
 export type ProjectBuildMinAggregateInputType = {
   id?: true
+  status?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -55,6 +59,7 @@ export type ProjectBuildMinAggregateInputType = {
 
 export type ProjectBuildMaxAggregateInputType = {
   id?: true
+  status?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -62,6 +67,7 @@ export type ProjectBuildMaxAggregateInputType = {
 
 export type ProjectBuildCountAggregateInputType = {
   id?: true
+  status?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -142,6 +148,7 @@ export type ProjectBuildGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type ProjectBuildGroupByOutputType = {
   id: string
+  status: $Enums.ProjectBuildStatus
   projectId: string
   createdAt: Date
   updatedAt: Date
@@ -170,6 +177,7 @@ export type ProjectBuildWhereInput = {
   OR?: Prisma.ProjectBuildWhereInput[]
   NOT?: Prisma.ProjectBuildWhereInput | Prisma.ProjectBuildWhereInput[]
   id?: Prisma.StringFilter<"ProjectBuild"> | string
+  status?: Prisma.EnumProjectBuildStatusFilter<"ProjectBuild"> | $Enums.ProjectBuildStatus
   projectId?: Prisma.StringFilter<"ProjectBuild"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectBuild"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectBuild"> | Date | string
@@ -178,6 +186,7 @@ export type ProjectBuildWhereInput = {
 
 export type ProjectBuildOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -189,6 +198,7 @@ export type ProjectBuildWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProjectBuildWhereInput | Prisma.ProjectBuildWhereInput[]
   OR?: Prisma.ProjectBuildWhereInput[]
   NOT?: Prisma.ProjectBuildWhereInput | Prisma.ProjectBuildWhereInput[]
+  status?: Prisma.EnumProjectBuildStatusFilter<"ProjectBuild"> | $Enums.ProjectBuildStatus
   projectId?: Prisma.StringFilter<"ProjectBuild"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectBuild"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectBuild"> | Date | string
@@ -197,6 +207,7 @@ export type ProjectBuildWhereUniqueInput = Prisma.AtLeast<{
 
 export type ProjectBuildOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -210,6 +221,7 @@ export type ProjectBuildScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProjectBuildScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProjectBuildScalarWhereWithAggregatesInput | Prisma.ProjectBuildScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ProjectBuild"> | string
+  status?: Prisma.EnumProjectBuildStatusWithAggregatesFilter<"ProjectBuild"> | $Enums.ProjectBuildStatus
   projectId?: Prisma.StringWithAggregatesFilter<"ProjectBuild"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectBuild"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectBuild"> | Date | string
@@ -217,6 +229,7 @@ export type ProjectBuildScalarWhereWithAggregatesInput = {
 
 export type ProjectBuildCreateInput = {
   id?: string
+  status: $Enums.ProjectBuildStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutBuildsInput
@@ -224,6 +237,7 @@ export type ProjectBuildCreateInput = {
 
 export type ProjectBuildUncheckedCreateInput = {
   id?: string
+  status: $Enums.ProjectBuildStatus
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -231,6 +245,7 @@ export type ProjectBuildUncheckedCreateInput = {
 
 export type ProjectBuildUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectBuildStatusFieldUpdateOperationsInput | $Enums.ProjectBuildStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutBuildsNestedInput
@@ -238,6 +253,7 @@ export type ProjectBuildUpdateInput = {
 
 export type ProjectBuildUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectBuildStatusFieldUpdateOperationsInput | $Enums.ProjectBuildStatus
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -245,6 +261,7 @@ export type ProjectBuildUncheckedUpdateInput = {
 
 export type ProjectBuildCreateManyInput = {
   id?: string
+  status: $Enums.ProjectBuildStatus
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -252,12 +269,14 @@ export type ProjectBuildCreateManyInput = {
 
 export type ProjectBuildUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectBuildStatusFieldUpdateOperationsInput | $Enums.ProjectBuildStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProjectBuildUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectBuildStatusFieldUpdateOperationsInput | $Enums.ProjectBuildStatus
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -275,6 +294,7 @@ export type ProjectBuildOrderByRelationAggregateInput = {
 
 export type ProjectBuildCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -282,6 +302,7 @@ export type ProjectBuildCountOrderByAggregateInput = {
 
 export type ProjectBuildMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -289,6 +310,7 @@ export type ProjectBuildMaxOrderByAggregateInput = {
 
 export type ProjectBuildMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -336,14 +358,20 @@ export type ProjectBuildUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.ProjectBuildScalarWhereInput | Prisma.ProjectBuildScalarWhereInput[]
 }
 
+export type EnumProjectBuildStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ProjectBuildStatus
+}
+
 export type ProjectBuildCreateWithoutProjectInput = {
   id?: string
+  status: $Enums.ProjectBuildStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ProjectBuildUncheckedCreateWithoutProjectInput = {
   id?: string
+  status: $Enums.ProjectBuildStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -379,6 +407,7 @@ export type ProjectBuildScalarWhereInput = {
   OR?: Prisma.ProjectBuildScalarWhereInput[]
   NOT?: Prisma.ProjectBuildScalarWhereInput | Prisma.ProjectBuildScalarWhereInput[]
   id?: Prisma.StringFilter<"ProjectBuild"> | string
+  status?: Prisma.EnumProjectBuildStatusFilter<"ProjectBuild"> | $Enums.ProjectBuildStatus
   projectId?: Prisma.StringFilter<"ProjectBuild"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectBuild"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectBuild"> | Date | string
@@ -386,24 +415,28 @@ export type ProjectBuildScalarWhereInput = {
 
 export type ProjectBuildCreateManyProjectInput = {
   id?: string
+  status: $Enums.ProjectBuildStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ProjectBuildUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectBuildStatusFieldUpdateOperationsInput | $Enums.ProjectBuildStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProjectBuildUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectBuildStatusFieldUpdateOperationsInput | $Enums.ProjectBuildStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProjectBuildUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectBuildStatusFieldUpdateOperationsInput | $Enums.ProjectBuildStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -412,6 +445,7 @@ export type ProjectBuildUncheckedUpdateManyWithoutProjectInput = {
 
 export type ProjectBuildSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  status?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -420,6 +454,7 @@ export type ProjectBuildSelect<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type ProjectBuildSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  status?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -428,6 +463,7 @@ export type ProjectBuildSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
 
 export type ProjectBuildSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  status?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -436,12 +472,13 @@ export type ProjectBuildSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
 
 export type ProjectBuildSelectScalar = {
   id?: boolean
+  status?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectBuildOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["projectBuild"]>
+export type ProjectBuildOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["projectBuild"]>
 export type ProjectBuildInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }
@@ -459,6 +496,7 @@ export type $ProjectBuildPayload<ExtArgs extends runtime.Types.Extensions.Intern
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    status: $Enums.ProjectBuildStatus
     projectId: string
     createdAt: Date
     updatedAt: Date
@@ -887,6 +925,7 @@ export interface Prisma__ProjectBuildClient<T, Null = never, ExtArgs extends run
  */
 export interface ProjectBuildFieldRefs {
   readonly id: Prisma.FieldRef<"ProjectBuild", 'String'>
+  readonly status: Prisma.FieldRef<"ProjectBuild", 'ProjectBuildStatus'>
   readonly projectId: Prisma.FieldRef<"ProjectBuild", 'String'>
   readonly createdAt: Prisma.FieldRef<"ProjectBuild", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProjectBuild", 'DateTime'>

@@ -1,71 +1,44 @@
 // lib/cron.ts
 import { setInterval } from "node:timers/promises";
-import * as TurbowarpPackager from "@turbowarp/packager";
-
-import { DockerExecuter, Packager, Signer } from "@acme/packager";
+import { Octokit } from "@octokit/rest";
 
 import type { Project } from "./prisma/generated/client";
-import { sleep } from "~/utils/sleep";
+import { env } from "./env";
+import { ProjectBuildStatus } from "./prisma/generated/client";
 import { db } from "./server/db";
-import { FileStorage } from "./server/FileStorage";
 
-const fs = new FileStorage();
-
-const build = async (project: Project) => {
-  const scratchFile = await fs.getProjectScratchSource(project.id);
-  const keystore = await fs.getProjectKeystore(project.id);
-  const icon = await fs.getProjectIcon(project.id);
-
-  console.log("validating");
-  // validate inputs before build
-  if (!scratchFile || !keystore || !icon) return;
-
-  const loadedProject = await TurbowarpPackager.loadProject(scratchFile);
-  console.log("test");
-
-  const warpPackager = new TurbowarpPackager.Packager();
-
-  warpPackager.project = loadedProject;
-  warpPackager.options.autoplay = true;
-
-  console.log("and here");
-  const packageResult = await warpPackager.package();
-
-  const scratchHtml = Buffer.from(packageResult.data).toString("utf8");
-
-  const executer = new DockerExecuter();
-
-  try {
-    await executer.start();
-
-    const packager = new Packager({ offline: true }, executer);
-
-    console.log("initing");
-
-    await packager.init({
-      appId: `com.bytic.${project.creatorId}.${project.id}`,
-      appName: project.name,
-      scratchHtml,
-      // icon,
-    });
-
-    console.log("build");
-    await packager.build();
-
-    console.log("writeFile");
-    await executer.writeFile(Signer.KEYSTORE_PATH, keystore);
-
-    const signer = new Signer({ storePass: project.keypass }, executer);
-
-    console.log("packager.sign");
-    const apk = await packager.sign(signer);
-
-    console.log("saveProjectApk");
-    await fs.saveProjectApk(project.id, apk);
-  } finally {
-    await executer.remove();
-  }
+type WorkflowInputs = {
+  USER_ID: string;
+  APP_ID: string;
+  APP_NAME: string;
+  SCRATCH_FILE: string;
+  ICON_FILE: string;
+  KEYSTORE_FILE: string;
+  KEYSTORE_PASS: string;
+  OUTPUT_PATH?: string;
+  CALLBACK_URL: string;
 };
+
+async function triggerWorkflow(
+  owner: string,
+  repo: string,
+  workflowFileName: string, // e.g., "packager.yml"
+  ref: string, // branch, tag, or commit
+  inputs: WorkflowInputs,
+  token: string,
+) {
+  const octokit = new Octokit({ auth: token });
+
+  await octokit.actions.createWorkflowDispatch({
+    owner,
+    repo,
+    workflow_id: workflowFileName,
+    ref,
+    inputs,
+  });
+
+  console.log("Workflow triggered successfully!");
+}
 
 async function runTask() {
   const project = await db.$transaction(async (tx) => {
@@ -81,9 +54,8 @@ async function runTask() {
 
     await tx.project.update({
       where: { id: project.id },
-      data: { queuedAt: null, isBuilding: true },
+      data: { queuedAt: null },
     });
-
     return project;
   });
 
@@ -94,10 +66,27 @@ async function runTask() {
   }
 
   try {
-    await build(project);
+    await triggerWorkflow(
+      "bytic-academy",
+      "scratch",
+      "packager.yml",
+      "main",
+      {
+        USER_ID: project.creatorId,
+        APP_ID: `com.bytic.${project.creatorId}.${project.id}`,
+        APP_NAME: project.name,
+        SCRATCH_FILE: `/api/projects/${project.id}/files/scratch`,
+        ICON_FILE: `/api/projects/${project.id}/files/icon`,
+        KEYSTORE_FILE: `/api/projects/${project.id}/files/keystore`,
+        KEYSTORE_PASS: project.keypass,
+        CALLBACK_URL: `${env.WEB_URL}/api/build-callback/${project.id}`,
+      },
+      env.GITHUB_TOKEN,
+    );
 
     await db.projectBuild.create({
       data: {
+        status: ProjectBuildStatus.Building,
         project: {
           connect: {
             id: project.id,
@@ -106,13 +95,11 @@ async function runTask() {
       },
     });
   } catch (e) {
-    console.log(`Failed building project "${project.id}". reason:`, e);
+    console.log(
+      `Failed triggering project build for "${project.id}". reason:`,
+      e,
+    );
   }
-
-  await db.project.update({
-    where: { id: project.id },
-    data: { isBuilding: false },
-  });
 }
 
 // Your async task
@@ -134,10 +121,10 @@ async function runTask() {
   }
 })();
 
-// Job 2
-(async () => {
-  for await (const _ of setInterval(1000)) {
-    await runTask();
-  }
-})();
-// }
+// // Job 2
+// (async () => {
+//   for await (const _ of setInterval(1000)) {
+//     await runTask();
+//   }
+// })();
+// // }

@@ -699,6 +699,7 @@ export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeo
 
 export const ProjectBuildScalarFieldEnum = {
   id: 'id',
+  status: 'status',
   projectId: 'projectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -769,6 +770,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectBuildStatus'
+ */
+export type EnumProjectBuildStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectBuildStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectBuildStatus[]'
+ */
+export type ListEnumProjectBuildStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectBuildStatus[]'>
     
 
 

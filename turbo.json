@@ -88,12 +88,14 @@
     "PORT",
     "APP_ID",
     "APP_NAME",
-    "HTML_FILE",
+    "SCRATCH_FILE",
     "ICON_FILE",
     "KEYSTORE_FILE",
     "KEYSTORE_PASS",
     "OUTPUT_PATH",
-    "CALLBACK_URL"
+    "CALLBACK_URL",
+    "ACCESS_TOKEN",
+    "GITHUB_TOKEN"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

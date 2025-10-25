@@ -97,6 +97,7 @@ export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeo
 
 export const ProjectBuildScalarFieldEnum = {
   id: 'id',
+  status: 'status',
   projectId: 'projectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

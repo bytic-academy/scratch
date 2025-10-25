@@ -45,10 +45,17 @@ model Project {
     updatedAt DateTime @updatedAt
 }
 
+enum ProjectBuildStatus {
+    Building
+    Failed
+    Success
+}
+
 model ProjectBuild {
     id String @id @default(cuid())
 
-    project   Project @relation(fields: [projectId], references: [id])
+    status    ProjectBuildStatus
+    project   Project            @relation(fields: [projectId], references: [id])
     projectId String
 
     createdAt DateTime @default(now())
