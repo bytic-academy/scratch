@@ -10,6 +10,9 @@ import "./src/env";
 const config: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["@turbowarp/packager", "dockerode"],
+  experimental: {
+    optimizePackageImports: ["@prisma/client"],
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];
