@@ -21,9 +21,9 @@ export const GET = async (
   const scratchSource = await fileStorage.getProjectScratchSource(id);
   const keystore = await fileStorage.getProjectKeystore(id);
 
-  return {
+  return Response.json({
     icon: icon?.url ?? null,
     scratchSource: scratchSource?.url ?? null,
     keystore: keystore?.url ?? null,
-  };
+  });
 };
