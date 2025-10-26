@@ -217,7 +217,7 @@ export const projectRouter = createTRPCRouter({
           APP_NAME: project.name,
           FILES_URL: `${env.NEXT_PUBLIC_WEB_URL}/api/projects/${project.id}/files`,
           KEYSTORE_PASS: project.keypass,
-          CALLBACK_URL: `${env.NEXT_PUBLIC_WEB_URL}/api/${project.id}/build-callback`,
+          CALLBACK_URL: `${env.NEXT_PUBLIC_WEB_URL}/api/projects/${project.id}/build-callback`,
         },
       });
 
