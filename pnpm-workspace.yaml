@@ -21,6 +21,7 @@ catalogs:
 onlyBuiltDependencies:
   - esbuild
   - sharp
+  - "@prisma/client"
 publicHoistPattern:
   - "@turbowarp/packager"
   - "@turbowarp/scaffolding"
