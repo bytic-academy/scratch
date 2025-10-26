@@ -49,33 +49,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
     }),
   );
 
-  const { data: imageData } = useQuery(
-    trpc.project.loadIcon.queryOptions(
-      { projectId: data.id },
-      { throwOnError: false },
-    ),
-  );
-
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!imageData) return;
-
-    const blob = new Blob([imageData], { type: "image/png" });
-    const url = URL.createObjectURL(blob);
-
-    setImageUrl(url);
-
-    return () => URL.revokeObjectURL(url);
-  }, [imageData]);
-
   return (
     <Card className="col-span-12 py-4 min-[500px]:col-span-6 sm:col-span-4 lg:col-span-3">
       <CardHeader className="flex h-20 items-center justify-between px-4">
         <CardTitle>{data.name}</CardTitle>
 
-        {imageUrl && (
-          <img src={imageUrl} className="aspect-square h-full rounded-full" />
+        {data.iconUrl && (
+          <img
+            src={data.iconUrl}
+            className="aspect-square h-full rounded-full"
+          />
         )}
       </CardHeader>
 
@@ -135,7 +118,9 @@ const List: React.FC = () => {
 
   return (
     <div className="grid grid-cols-12 gap-6">
-      {data?.map((project) => <ProjectCard key={project.id} data={project} />)}
+      {data?.map((project) => (
+        <ProjectCard key={project.id} data={project} />
+      ))}
     </div>
   );
 };

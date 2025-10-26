@@ -103,31 +103,31 @@ export const projectRouter = createTRPCRouter({
       await fs.saveProjectIcon(project.id, file);
     }),
 
-  loadIcon: protectedProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(async ({ input, ctx: { db, user, fs } }) => {
-      const project = await db.project.findUnique({
-        where: { id: input.projectId, creatorId: user.id },
-      });
+  // loadIcon: protectedProcedure
+  //   .input(z.object({ projectId: z.string() }))
+  //   .query(async ({ input, ctx: { db, user, fs } }) => {
+  //     const project = await db.project.findUnique({
+  //       where: { id: input.projectId, creatorId: user.id },
+  //     });
 
-      if (!project) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Project not found",
-        });
-      }
+  //     if (!project) {
+  //       throw new TRPCError({
+  //         code: "NOT_FOUND",
+  //         message: "Project not found",
+  //       });
+  //     }
 
-      const buffer = await fs.getProjectIcon(project.id);
+  //     const buffer = await fs.getProjectIcon(project.id);
 
-      if (!buffer) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Project has not any icons",
-        });
-      }
+  //     if (!buffer) {
+  //       throw new TRPCError({
+  //         code: "NOT_FOUND",
+  //         message: "Project has not any icons",
+  //       });
+  //     }
 
-      return new Uint8Array(buffer);
-    }),
+  //     return new Uint8Array(buffer);
+  //   }),
 
   build: protectedProcedure
     .input(z.object({ projectId: z.string() }))
@@ -184,7 +184,7 @@ export const projectRouter = createTRPCRouter({
 
   getAll: protectedProcedure
     .input(QueryProjectSchema)
-    .query(async ({ input, ctx: { db, user } }) => {
+    .query(async ({ input, ctx: { db, user, fs } }) => {
       const PAGE_SIZE = 20;
 
       const projects = await db.project.findMany({
@@ -195,11 +195,14 @@ export const projectRouter = createTRPCRouter({
         take: PAGE_SIZE,
       });
 
-      return projects.map((project) => ({
-        id: project.id,
-        name: project.name,
-        createdAt: project.createdAt,
-        updatedAt: project.updatedAt,
-      }));
+      return Promise.all(
+        projects.map(async (project) => ({
+          id: project.id,
+          name: project.name,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
+          iconUrl: (await fs.getProjectIcon(project.id))?.url,
+        })),
+      );
     }),
 });

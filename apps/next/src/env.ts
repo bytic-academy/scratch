@@ -20,6 +20,8 @@ export const env = createEnv({
 
     GITHUB_TOKEN: z.string(),
     WORKFLOW_ACCESS_TOKEN: z.string(),
+
+    BLOB_READ_WRITE_TOKEN: z.string(),
   },
 
   /**
@@ -45,6 +47,8 @@ export const env = createEnv({
     NEXT_PUBLIC_WEB_URL: process.env.NEXT_PUBLIC_WEB_URL,
     GITHUB_TOKEN: process.env.GITHUB_TOKEN,
     WORKFLOW_ACCESS_TOKEN: process.env.WORKFLOW_ACCESS_TOKEN,
+
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
