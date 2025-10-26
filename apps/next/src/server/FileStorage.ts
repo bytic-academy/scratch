@@ -1,46 +1,43 @@
-import fs from "fs";
-import { join } from "path";
-import { cwd } from "process";
 import * as BlobStorage from "@vercel/blob";
 
 import { env } from "~/env";
 
-class LocalFileStorageAPI {
-  private getProjectDir(projectId: string) {
-    return join(cwd(), "data", "projects", projectId);
-  }
+// class LocalFileStorageAPI {
+//   private getProjectDir(projectId: string) {
+//     return join(cwd(), "data", "projects", projectId);
+//   }
 
-  protected async writeFile(
-    projectId: string,
-    fileName: string,
-    data: Buffer | Uint8Array,
-  ) {
-    await fs.promises.mkdir(this.getProjectDir(projectId), { recursive: true });
+//   protected async writeFile(
+//     projectId: string,
+//     fileName: string,
+//     data: Buffer | ArrayBuffer,
+//   ) {
+//     await fs.promises.mkdir(this.getProjectDir(projectId), { recursive: true });
 
-    await fs.promises.writeFile(
-      join(this.getProjectDir(projectId), fileName),
-      data,
-    );
-  }
+//     await fs.promises.writeFile(
+//       join(this.getProjectDir(projectId), fileName),
+//       data,
+//     );
+//   }
 
-  protected async readFile(projectId: string, fileName: string) {
-    try {
-      const data = await fs.promises.readFile(
-        join(this.getProjectDir(projectId), fileName),
-      );
-      return data;
-    } catch {
-      return null;
-    }
-  }
+//   protected async readFile(projectId: string, fileName: string) {
+//     try {
+//       const data = await fs.promises.readFile(
+//         join(this.getProjectDir(projectId), fileName),
+//       );
+//       return data;
+//     } catch {
+//       return null;
+//     }
+//   }
 
-  async removeProjectData(projectId: string) {
-    await fs.promises.rm(this.getProjectDir(projectId), {
-      force: true,
-      recursive: true,
-    });
-  }
-}
+//   async removeProjectData(projectId: string) {
+//     await fs.promises.rm(this.getProjectDir(projectId), {
+//       force: true,
+//       recursive: true,
+//     });
+//   }
+// }
 
 class BlobStorageAPI {
   private getBlobKey(projectId: string, fileName: string) {
@@ -89,7 +86,7 @@ class BlobStorageAPI {
 }
 
 export class FileStorage extends BlobStorageAPI {
-  async saveProjectKeystore(projectId: string, keystore: Buffer | Uint8Array) {
+  async saveProjectKeystore(projectId: string, keystore: Buffer | ArrayBuffer) {
     await this.writeFile(projectId, "keystore.p12", keystore);
   }
 
