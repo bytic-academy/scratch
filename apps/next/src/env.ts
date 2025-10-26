@@ -18,7 +18,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
 
-    GITHUB_TOKEN: z.string(),
+    GITHUB_TOKEN: z.string().optional(),
     WORKFLOW_ACCESS_TOKEN: z.string(),
 
     BLOB_READ_WRITE_TOKEN: z.string(),
