@@ -180,8 +180,20 @@ export const projectRouter = createTRPCRouter({
         });
       }
 
-      if (project.isBuilding || project.queuedAt) {
-        return;
+      const remainingProjectBuild = await db.projectBuild.findFirst({
+        where: {
+          status: ProjectBuildStatus.Building,
+          project: {
+            creatorId: project.creatorId,
+          },
+        },
+      });
+
+      if (remainingProjectBuild) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "A build is currently in progress",
+        });
       }
 
       const scratchFile = await fs.getProjectScratchSource(project.id);
