@@ -2,10 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client"
+    provider = "prisma-client-js"
     // TODO: FIX THIS
     // that package needs ".prisma/client" as package
-    output   = "../src/prisma/generated"
+    output   = "../../../node_modules/.prisma/client"
 }
 
 datasource db {
