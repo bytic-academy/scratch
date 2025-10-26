@@ -50,7 +50,7 @@ class BlobStorageAPI {
   protected async writeFile(
     projectId: string,
     fileName: string,
-    data: Buffer | Uint8Array,
+    data: Buffer | ArrayBuffer,
   ) {
     const key = this.getBlobKey(projectId, fileName);
     await BlobStorage.put(key, data, {
