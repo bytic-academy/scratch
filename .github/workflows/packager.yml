@@ -15,18 +15,10 @@ on:
         type: string
         required: true
         description: APP_NAME
-      SCRATCH_FILE:
+      FILES_URL:
         type: string
         required: true
-        description: SCRATCH_FILE
-      ICON_FILE:
-        type: string
-        required: true
-        description: ICON_FILE
-      KEYSTORE_FILE:
-        type: string
-        required: true
-        description: KEYSTORE_FILE
+        description: FILES_URL
       KEYSTORE_PASS:
         type: string
         required: true
@@ -66,9 +58,7 @@ jobs:
         env:
           APP_ID: ${{ github.event.inputs.APP_ID }}
           APP_NAME: ${{ github.event.inputs.APP_NAME }}
-          SCRATCH_FILE: ${{ github.event.inputs.SCRATCH_FILE }}
-          ICON_FILE: ${{ github.event.inputs.ICON_FILE }}
-          KEYSTORE_FILE: ${{ github.event.inputs.KEYSTORE_FILE }}
+          FILES_URL: ${{ github.event.inputs.FILES_URL }}
           KEYSTORE_PASS: ${{ github.event.inputs.KEYSTORE_PASS }}
           OUTPUT_PATH: ${{ github.event.inputs.OUTPUT_PATH }}
           CALLBACK_URL: ${{ github.event.inputs.CALLBACK_URL }}

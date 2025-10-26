@@ -8,9 +8,7 @@ import { LocalExecuter } from "../src/Packager";
 
 const APP_ID = process.env.APP_ID!;
 const APP_NAME = process.env.APP_NAME!;
-const SCRATCH_FILE = process.env.SCRATCH_FILE!;
-const ICON_FILE = process.env.ICON_FILE!;
-const KEYSTORE_FILE = process.env.KEYSTORE_FILE!;
+const FILES_URL = process.env.FILES_URL!;
 const KEYSTORE_PASS = process.env.KEYSTORE_PASS!;
 const OUTPUT_PATH = process.env.OUTPUT_PATH ?? "/output/app.apk";
 const CALLBACK_URL = process.env.CALLBACK_URL!;
@@ -22,9 +20,26 @@ const run = async () => {
   };
 
   try {
-    const scratchFile = await fetch(SCRATCH_FILE, { headers });
-    const iconFile = await fetch(ICON_FILE, { headers });
-    const keystoreFile = await fetch(KEYSTORE_FILE, { headers });
+    const filesResponse = await fetch(FILES_URL, { headers });
+
+    if (!filesResponse.ok)
+      throw new Error(
+        `Failed to fetch ${FILES_URL}: ${filesResponse.status} - ${filesResponse.statusText}`,
+      );
+
+    const files = (await filesResponse.json()) as {
+      scratchSource: string | null;
+      icon: string | null;
+      keystore: string | null;
+    };
+
+    if (!files.icon || !files.keystore || !files.scratchSource) {
+      throw new Error("Some files do not exists");
+    }
+
+    const scratchFile = await fetch(files.scratchSource);
+    const iconFile = await fetch(files.icon);
+    const keystoreFile = await fetch(files.keystore);
 
     const loadedProject = await TurbowarpPackager.loadProject(
       Buffer.from(await scratchFile.arrayBuffer()),
