@@ -12,11 +12,12 @@ import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import SuperJSON from "superjson";
 
 import type { AppRouter } from "../server/api/root";
+import { env } from "~/env";
 
 export const queryClient = new QueryClient();
 
 const options = {
-  url: "http://localhost:3000/api/trpc",
+  url: `${env.WEB_URL}/api/trpc`,
 } as const;
 
 export const trpcClient = createTRPCClient<AppRouter>({
