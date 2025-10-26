@@ -5,7 +5,7 @@ generator client {
     provider = "prisma-client"
     // TODO: FIX THIS
     // that package needs ".prisma/client" as package
-    output   = "./../../node_modules/.prisma/client"
+    output   = "/vercel/path0/node_modules/.prisma/client"
 }
 
 datasource db {
