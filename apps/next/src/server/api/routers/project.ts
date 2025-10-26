@@ -1,8 +1,11 @@
+import { Octokit } from "@octokit/rest";
+import { ProjectBuildStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
 import { generateP12KeystoreBuffer } from "@acme/packager";
 
+import { env } from "~/env";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
   CreateProjectSchema,
@@ -15,6 +18,40 @@ import {
 import { generateRandomString } from "~/utils/str";
 import { convertToPng } from "../utils/image";
 
+const octokit = new Octokit({ auth: env.GITHUB_TOKEN });
+
+// type WorkflowInputs = {
+//   USER_ID: string;
+//   APP_ID: string;
+//   APP_NAME: string;
+//   SCRATCH_FILE: string;
+//   ICON_FILE: string;
+//   KEYSTORE_FILE: string;
+//   KEYSTORE_PASS: string;
+//   OUTPUT_PATH?: string;
+//   CALLBACK_URL: string;
+// };
+
+// async function triggerWorkflow(
+//   owner: string,
+//   repo: string,
+//   workflowFileName: string, // e.g., "packager.yml"
+//   ref: string, // branch, tag, or commit
+//   inputs: WorkflowInputs,
+//   token: string,
+// ) {
+//   const octokit = new Octokit({ auth: token });
+
+//   await octokit.actions.createWorkflowDispatch({
+//     owner,
+//     repo,
+//     workflow_id: workflowFileName,
+//     ref,
+//     inputs,
+//   });
+
+//   console.log("Workflow triggered successfully!");
+// }
 export const projectRouter = createTRPCRouter({
   create: protectedProcedure
     .input(CreateProjectSchema)
@@ -157,9 +194,32 @@ export const projectRouter = createTRPCRouter({
         });
       }
 
-      await db.project.update({
-        where: { id: project.id },
-        data: { queuedAt: new Date() },
+      await octokit.actions.createWorkflowDispatch({
+        owner: "bytic-academy",
+        repo: "scratch",
+        workflow_id: "packager.yml",
+        ref: "main",
+        inputs: {
+          USER_ID: project.creatorId,
+          APP_ID: `com.bytic.${project.creatorId}.${project.id}`,
+          APP_NAME: project.name,
+          SCRATCH_FILE: `/api/projects/${project.id}/files/scratch`,
+          ICON_FILE: `/api/projects/${project.id}/files/icon`,
+          KEYSTORE_FILE: `/api/projects/${project.id}/files/keystore`,
+          KEYSTORE_PASS: project.keypass,
+          CALLBACK_URL: `${env.NEXT_PUBLIC_WEB_URL}/api/${project.id}/build-callback`,
+        },
+      });
+
+      await db.projectBuild.create({
+        data: {
+          status: ProjectBuildStatus.Building,
+          project: {
+            connect: {
+              id: project.id,
+            },
+          },
+        },
       });
     }),
 
