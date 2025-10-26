@@ -79,7 +79,7 @@ async function runTask() {
         ICON_FILE: `/api/projects/${project.id}/files/icon`,
         KEYSTORE_FILE: `/api/projects/${project.id}/files/keystore`,
         KEYSTORE_PASS: project.keypass,
-        CALLBACK_URL: `${env.WEB_URL}/api/build-callback/${project.id}`,
+        CALLBACK_URL: `${env.NEXT_PUBLIC_WEB_URL}/api/build-callback/${project.id}`,
       },
       env.GITHUB_TOKEN,
     );

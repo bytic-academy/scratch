@@ -18,7 +18,6 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
 
-    WEB_URL: z.url(),
     GITHUB_TOKEN: z.string(),
     WORKFLOW_ACCESS_TOKEN: z.string(),
   },
@@ -29,6 +28,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_WEB_URL: z.url(),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
   },
 
@@ -42,7 +42,7 @@ export const env = createEnv({
     // AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    WEB_URL: process.env.WEB_URL,
+    NEXT_PUBLIC_WEB_URL: process.env.NEXT_PUBLIC_WEB_URL,
     GITHUB_TOKEN: process.env.GITHUB_TOKEN,
     WORKFLOW_ACCESS_TOKEN: process.env.WORKFLOW_ACCESS_TOKEN,
   },

@@ -17,7 +17,7 @@ import { env } from "~/env";
 export const queryClient = new QueryClient();
 
 const options = {
-  url: `${env.WEB_URL}/api/trpc`,
+  url: `${env.NEXT_PUBLIC_WEB_URL}/api/trpc`,
 } as const;
 
 export const trpcClient = createTRPCClient<AppRouter>({
