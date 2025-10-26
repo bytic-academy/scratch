@@ -15,7 +15,7 @@
     "db:deploy": "pnpm with-env prisma migrate deploy",
     "preview": "next build && next start",
     "build:dev": "pnpm db:generate && pnpm with-env next build",
-    "build": "pnpm db:generate --no-engine && pnpm with-env next build",
+    "build": "pnpm db:generate && pnpm with-env next build",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "pnpm db:generate && pnpm with-env next dev --turbopack",
     "format": "prettier --check . --ignore-path ../../.gitignore",
