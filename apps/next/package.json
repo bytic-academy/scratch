@@ -16,7 +16,7 @@
     "preview": "next build && next start",
     "build:dev": "pnpm db:generate && pnpm with-env next build",
     "build": "pnpm with-env next build",
-    "postinstall": "prisma generate --no-engine",
+    "postinstall": "prisma generate --schema=./prisma/schema.prisma --no-engine",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "pnpm with-env next dev --turbopack",
     "format": "prettier --check . --ignore-path ../../.gitignore",

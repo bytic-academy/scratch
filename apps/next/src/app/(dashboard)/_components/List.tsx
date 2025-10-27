@@ -27,9 +27,10 @@ import { trpc, trpcClient } from "~/utils/trpc";
 
 type ProjectCardProps = {
   data: RouterOutput["project"]["getAll"][number];
+  canBuild: boolean;
 };
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ data, canBuild }) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { refetchQueries } = useQueryClient();
 
@@ -92,22 +93,24 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
         <Button
           onClick={() => {
             buildProject({ projectId: data.id });
           }}
-          disabled={isPending || data.isBuilding}
+          disabled={isPending || data.isBuilding || !canBuild}
         >
           <HammerIcon />
         </Button>
 
-        <Button data-disabled={!data.apkUrl} asChild>
+        <Button asChild>
           <Link
             href={data.apkUrl ?? "#"}
             target="_blank"
             rel="noopener noreferrer"
             download
-            className="[data-disabled=true]:opacity-50 [data-disabled=true]:cursor-not-allowed [data-disabled=true]:pointer-events-none"
+            data-disabled={!data.apkUrl}
+            className="[data-disabled=true]:pointer-events-none! [data-disabled=true]:cursor-not-allowed! [data-disabled=true]:opacity-50!"
           >
             <DownloadIcon />
           </Link>
@@ -124,10 +127,12 @@ const List: React.FC = () => {
     }),
   );
 
+  const canBuild = !data?.some((item) => item.isBuilding);
+
   return (
     <div className="grid grid-cols-12 gap-6">
       {data?.map((project) => (
-        <ProjectCard key={project.id} data={project} />
+        <ProjectCard key={project.id} data={project} canBuild={canBuild} />
       ))}
     </div>
   );
