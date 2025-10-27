@@ -218,6 +218,7 @@ export const projectRouter = createTRPCRouter({
           FILES_URL: `${env.NEXT_PUBLIC_WEB_URL}/api/projects/${project.id}/files`,
           KEYSTORE_PASS: project.keypass,
           CALLBACK_URL: `${env.NEXT_PUBLIC_WEB_URL}/api/projects/${project.id}/build-callback`,
+          OUTPUT_PATH: `/projects/${project.id}/app.apk`,
         },
       });
 
@@ -263,6 +264,13 @@ export const projectRouter = createTRPCRouter({
         },
         skip: (input.page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
+        include: {
+          builds: {
+            where: {
+              status: ProjectBuildStatus.Building,
+            },
+          },
+        },
       });
 
       return Promise.all(
@@ -271,7 +279,9 @@ export const projectRouter = createTRPCRouter({
           name: project.name,
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
+          isBuilding: project.builds.length > 0,
           iconUrl: (await fs.getProjectIcon(project.id))?.url,
+          apkUrl: (await fs.getProjectApk(project.id))?.downloadUrl,
         })),
       );
     }),

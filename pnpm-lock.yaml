@@ -437,6 +437,9 @@ importers:
       '@turbowarp/packager':
         specifier: 3.6.0
         version: 3.6.0
+      '@vercel/blob':
+        specifier: ^2.0.0
+        version: 2.0.0
       dockerode:
         specifier: ^4.0.7
         version: 4.0.9

@@ -63,6 +63,7 @@ jobs:
           OUTPUT_PATH: ${{ github.event.inputs.OUTPUT_PATH }}
           CALLBACK_URL: ${{ github.event.inputs.CALLBACK_URL }}
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
 
       - name: Notify callback if build failed
         if: ${{ failure() }} # Runs if any previous step failed (including timeout)

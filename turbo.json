@@ -91,7 +91,9 @@
     "OUTPUT_PATH",
     "CALLBACK_URL",
     "ACCESS_TOKEN",
-    "GITHUB_TOKEN"
+    "GITHUB_TOKEN",
+    "PROJECT_ID",
+    "BLOB_READ_WRITE_TOKEN"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DownloadIcon, HammerIcon, TrashIcon } from "lucide-react";
 
@@ -65,23 +66,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
       <CardContent className="px-4"></CardContent>
 
       <CardFooter className="gap-2 px-4">
-        <Button>
-          دانلود <DownloadIcon />
-        </Button>
-
-        <Button
-          onClick={() => {
-            buildProject({ projectId: data.id });
-          }}
-          disabled={isPending}
-        >
-          بیلد <HammerIcon />
-        </Button>
-
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="destructive">
-              حذف <TrashIcon />
+              <TrashIcon />
             </Button>
           </DialogTrigger>
 
@@ -104,6 +92,26 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        <Button
+          onClick={() => {
+            buildProject({ projectId: data.id });
+          }}
+          disabled={isPending || data.isBuilding}
+        >
+          <HammerIcon />
+        </Button>
+
+        <Button data-disabled={!data.apkUrl} asChild>
+          <Link
+            href={data.apkUrl ?? "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="[data-disabled=true]:opacity-50 [data-disabled=true]:cursor-not-allowed [data-disabled=true]:pointer-events-none"
+          >
+            <DownloadIcon />
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

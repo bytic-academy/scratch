@@ -52,3 +52,6 @@ dist/
 .turbo
 
 /data
+
+.env
+.env.production

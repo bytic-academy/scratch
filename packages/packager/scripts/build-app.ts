@@ -6,6 +6,8 @@ import TurbowarpPackager from "@turbowarp/packager";
 import { Packager, Signer } from "../src";
 import { LocalExecuter } from "../src/Packager";
 
+import * as BlobStorage from "@vercel/blob"
+
 const APP_ID = process.env.APP_ID!;
 const APP_NAME = process.env.APP_NAME!;
 const FILES_URL = process.env.FILES_URL!;
@@ -13,6 +15,7 @@ const KEYSTORE_PASS = process.env.KEYSTORE_PASS!;
 const OUTPUT_PATH = process.env.OUTPUT_PATH ?? "/output/app.apk";
 const CALLBACK_URL = process.env.CALLBACK_URL!;
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN!;
+const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN!;
 
 const run = async () => {
   const headers = {
@@ -79,13 +82,24 @@ const run = async () => {
     await fs.promises.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
     await fs.promises.writeFile(OUTPUT_PATH, app);
 
+    await BlobStorage.put(OUTPUT_PATH, app, {
+      access: "public",
+      allowOverwrite: true,
+      cacheControlMaxAge: 1,
+      token: BLOB_READ_WRITE_TOKEN,
+    });
+
     const url = new URL(CALLBACK_URL);
     url.searchParams.set("status", "success");
     await fetch(url, { headers });
-  } catch {
+  } catch (e) {
     const url = new URL(CALLBACK_URL);
+
     url.searchParams.set("status", "failed");
+
     await fetch(url, { headers });
+
+    throw e;
   }
 };
 
