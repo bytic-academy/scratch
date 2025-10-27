@@ -12,6 +12,11 @@ export const GET = async (
   const id = (await ctx.params).id;
   const [, accessToken] = req.headers.get("authorization")?.split(" ") ?? [];
 
+  console.log("entries:", [...req.headers.entries()]);
+
+  console.log("accessToken", accessToken);
+  console.log("env.WORKFLOW_ACCESS_TOKEN", env.WORKFLOW_ACCESS_TOKEN);
+
   if (accessToken !== env.WORKFLOW_ACCESS_TOKEN) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

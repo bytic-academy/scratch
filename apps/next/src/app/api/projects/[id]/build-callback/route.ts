@@ -12,6 +12,9 @@ export const GET = async (
   const status = req.nextUrl.searchParams.get("status");
   const [, accessToken] = req.headers.get("authorization")?.split(" ") ?? [];
 
+  console.log("accessToken", accessToken);
+  console.log("env.WORKFLOW_ACCESS_TOKEN", env.WORKFLOW_ACCESS_TOKEN);
+
   if (accessToken !== env.WORKFLOW_ACCESS_TOKEN) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
