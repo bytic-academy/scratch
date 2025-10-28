@@ -47,6 +47,25 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     steps:
+      - name: Cache Docker image
+        uses: actions/cache@v4
+        id: docker-cache
+        with:
+          path: /tmp/docker-cache
+          key: docker-${{ runner.os }}-${{ hashFiles('.github/workflows/packager.yml') }}
+          
+      - name: Load Docker image from cache if available
+        if: steps.docker-cache.outputs.cache-hit == 'true'
+        run: |
+          docker load -i /tmp/docker-cache/bytic-scratch-packager.tar
+
+      - name: Pull Docker image (if not cached)
+        if: steps.docker-cache.outputs.cache-hit != 'true'
+        run: |
+          docker pull arashdev/bytic-scratch-packager:latest
+          mkdir -p /tmp/docker-cache
+          docker save arashdev/bytic-scratch-packager:latest -o /tmp/docker-cache/bytic-scratch-packager.tar
+
       - name: Checkout code
         uses: actions/checkout@v4
 

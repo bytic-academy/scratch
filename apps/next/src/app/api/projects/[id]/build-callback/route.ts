@@ -32,7 +32,5 @@ export const GET = async (
     },
   });
 
-  //   TODO: Download artifcate and save it
-
   return Response.json({ ok: true });
 };

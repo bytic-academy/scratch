@@ -183,9 +183,7 @@ export const projectRouter = createTRPCRouter({
       const remainingProjectBuild = await db.projectBuild.findFirst({
         where: {
           status: ProjectBuildStatus.Building,
-          project: {
-            creatorId: project.creatorId,
-          },
+          creatorId: project.creatorId,
         },
       });
 
@@ -228,6 +226,11 @@ export const projectRouter = createTRPCRouter({
           project: {
             connect: {
               id: project.id,
+            },
+          },
+          creator: {
+            connect: {
+              id: user.id,
             },
           },
         },
